@@ -14,12 +14,4 @@ export const TransactionSchema = new SimpleSchema({
         type: Number,
         min: 0
     },
-    createdAt: {
-        type: Date,
-        autoValue: function() {
-            if (this.isInsert) {
-                return new Date();
-            }
-        }
-    }
 });
