@@ -1,8 +1,9 @@
 import { Mongo } from 'meteor/mongo';
+import SimpleSchema from 'simpl-schema';
 
 export const TransactionsCollection = new Mongo.Collection('transactions');
 
-const TransactionSchema = new SimpleSchema({
+export const TransactionSchema = new SimpleSchema({
     senderUsername: {
         type: String,
     },
@@ -22,5 +23,3 @@ const TransactionSchema = new SimpleSchema({
         }
     }
 });
-
-TransactionsCollection.attachSchema(TransactionSchema);

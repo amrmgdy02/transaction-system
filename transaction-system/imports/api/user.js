@@ -26,5 +26,3 @@ const UserSchema = new SimpleSchema({
     }
   }
 });
-
-UsersCollection.attachSchema(UserSchema);
