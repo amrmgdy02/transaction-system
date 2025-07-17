@@ -10,12 +10,14 @@ const getUsername = async (userId) => {
 Meteor.methods({
   async 'transactions.insert'(transaction) {
     check(transaction, {
+      senderUsername: String,
       receiverUsername: String,
       amount: Number,
+      createdAt: Date,
     });
     const insertedTransaction = {
+      accountantUsername: await getUsername(this.userId),
       ...transaction,
-      senderUsername: await getUsername(this.userId),
     };
     return await TransactionsCollection.insertAsync(insertedTransaction);
   },
@@ -28,13 +30,43 @@ Meteor.methods({
   async 'transactions.update'(transaction) {
     check(transaction, {
       _id: String,
+      senderUsername: String,
       receiverUsername: String,
       amount: Number,
+      createdAt: Date,
     });
-
-    const { _id, receiverUsername, amount } = transaction;
+    const accountantUsername = await getUsername(this.userId);
+    const { _id, receiverUsername, amount, createdAt } = transaction;
     return await TransactionsCollection.updateAsync(_id, {
-      $set: { receiverUsername, amount },
+      $set: { accountantUsername, receiverUsername, amount, createdAt },
     });
   },
+
+  async 'transactions.getUserBalance'(username) {
+    check(username, String);
+    
+    const receivedTransactions = await TransactionsCollection.find({ 
+      receiverUsername: username 
+    }).fetchAsync();
+    const totalReceived = receivedTransactions.reduce((sum, t) => sum + t.amount, 0);
+    
+    const sentTransactions = await TransactionsCollection.find({ 
+      senderUsername: username 
+    }).fetchAsync();
+
+    const totalSent = sentTransactions.reduce((sum, t) => sum + t.amount, 0);
+    const balance = totalReceived - totalSent;
+    
+    return {
+      username: username,
+      balance: balance,
+      totalReceived: totalReceived,
+      totalSent: totalSent
+    };
+  },
+
+  async 'transactions.getAllUserNames'() {
+    const users = await Meteor.users.find({}, { fields: { username: 1 } }).fetchAsync();
+    return users.map(user => user.username);
+  }
 });

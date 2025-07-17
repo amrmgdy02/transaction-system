@@ -4,6 +4,9 @@ import SimpleSchema from 'simpl-schema';
 export const TransactionsCollection = new Mongo.Collection('transactions');
 
 export const TransactionSchema = new SimpleSchema({
+    accountantUsername: {
+        type: String,
+    },
     senderUsername: {
         type: String,
     },
@@ -13,5 +16,8 @@ export const TransactionSchema = new SimpleSchema({
     amount: {
         type: Number,
         min: 0
+    },
+    createdA: {
+        type: Date,
     },
 });

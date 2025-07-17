@@ -13,9 +13,9 @@ Meteor.publish('transactions', async function transactionsPublication() {
   }
   
   return TransactionsCollection.find({ 
-    $or: [
+    /*$or: [
       { senderUsername: username }, 
       { receiverUsername: username }
-    ] 
+    ] */
   });
 });

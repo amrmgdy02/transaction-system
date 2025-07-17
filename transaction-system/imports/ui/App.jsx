@@ -8,6 +8,8 @@ const { useTracker } = require('meteor/react-meteor-data');
 import { Transaction } from './Transaction.jsx';
 import { TransactionForm } from './TransactionForm.jsx';
 import { UpdateTransactionForm } from './UpdateTransactionForm.jsx';
+import { useEffect } from 'react';
+import { UserBalance } from './UserBalance.jsx';
 
 export const App = () => {
   const [isRegistering, setIsRegistering] = useState(true);
@@ -31,16 +33,12 @@ export const App = () => {
     
     let transactions = [];
     if (handle.ready()) {
-      transactions = TransactionsCollection.find({
-        $or: [
-          { senderUsername: user.username }, 
-          { receiverUsername: user.username }
-        ]
-      }).fetch();
+      transactions = TransactionsCollection.find({}).fetch();
     }
 
     return { user, transactions, isLoading, isAuthLoading };
   }, []);
+
 
   const handleUpdate = (transaction) => {
     setUpdatingTransaction(transaction);
@@ -76,6 +74,7 @@ export const App = () => {
     <Fragment>
       <button onClick={() => Meteor.logout()}>Logout</button>
       <h1>Welcome, {user.username}!</h1>
+      <UserBalance user={user} />
       <TransactionForm />
       {updatingTransaction && (
         <UpdateTransactionForm
