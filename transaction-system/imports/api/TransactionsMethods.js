@@ -101,6 +101,11 @@ Meteor.methods({
   async 'transactions.addUser'(username) {
     const password = Math.random().toString(36).slice(-8);
     const email = `${username}${Math.floor(Math.random() * 1000)}@idaco.com`;
+    const existingUser = await Meteor.users.findOneAsync({ username });
+    if (existingUser) {
+      throw new Meteor.Error('user-exists', 'User already exists');
+    }
+    
     const userId = await Accounts.createUserAsync({
       username: username,
       password: password,
