@@ -83,103 +83,114 @@ export const App = () => {
 
   if (!user) {
     return (
-      <Fragment>
+      <div className="auth-container">
         {isRegistering ? <RegistrationForm /> : <LoginForm />}
-        <p>
+        <p style={{ marginTop: '20px', color: '#666' }}>
           {isRegistering ? "Already have an account?" : "Don't have an account?"}
           <button className="toggle-button" onClick={() => setIsRegistering(!isRegistering)}>
             {isRegistering ? "Login" : "Register"}
           </button>
         </p>
-      </Fragment>
+      </div>
     );
   }
 
   return (
-    <Fragment>
-      <button onClick={() => Meteor.logout()}>Logout</button>
-      <h1>Welcome, {user.username}!</h1>
-      <h2>Add a New User</h2>
-      <div className="add-user-form">
-        <input
-          type="text"
-          placeholder="New User Name"
-          value={newUserName}
-          onChange={(e) => setNewUserName(e.currentTarget.value)}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter' && newUserName.trim()) {
-              Meteor.callAsync('transactions.addUser', newUserName.trim());
-              setNewUserName('');
-            }
-          }}
-        />
-        <button 
-          className="add-user-button" 
-          onClick={() => {
-            if (newUserName.trim()) {
-              Meteor.callAsync('transactions.addUser', newUserName.trim());
-              setNewUserName('');
-            }
-          }}
-        >
-          Add User
-        </button>
+    <div className="app-container">
+      <header className="header">
+        <h1 className="welcome-title">Transaction System</h1>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+          <span style={{ color: '#4c63d2', fontWeight: '600' }}>Welcome, {user.username}!</span>
+          <button className="logout-btn" onClick={() => Meteor.logout()}>Logout</button>
+        </div>
+      </header>
+
+      <div className="form-section">
+        <h2>Add New User</h2>
+        <div className="add-user-form">
+          <input
+            type="text"
+            placeholder="Enter new username"
+            value={newUserName}
+            onChange={(e) => setNewUserName(e.currentTarget.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && newUserName.trim()) {
+                Meteor.callAsync('transactions.addUser', newUserName.trim());
+                setNewUserName('');
+              }
+            }}
+          />
+          <button 
+            className="add-user-button" 
+            onClick={() => {
+              if (newUserName.trim()) {
+                Meteor.callAsync('transactions.addUser', newUserName.trim());
+                setNewUserName('');
+              }
+            }}
+          >
+            Add User
+          </button>
+        </div>
       </div>
 
-      <h2>Update User</h2>
-      <div className="update-user-form">
-        <input
-          type="text"
-          placeholder="Current Username"
-          value={oldUserName}
-          onChange={(e) => setOldUserName(e.currentTarget.value)}
-        />
-        <input
-          type="text"
-          placeholder="New Username"
-          value={newUsernameForUpdate}
-          onChange={(e) => setNewUsernameForUpdate(e.currentTarget.value)}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter' && oldUserName.trim() && newUsernameForUpdate.trim()) {
-              Meteor.callAsync('transactions.updateUser', oldUserName.trim(), newUsernameForUpdate.trim())
-                .then((result) => {
-                  console.log('User updated successfully:', result);
-                  alert(`Updated ${result.totalUpdated} transactions for user ${oldUserName}`);
-                  setOldUserName('');
-                  setNewUsernameForUpdate('');
-                })
-                .catch((error) => {
-                  console.error('Error updating user:', error);
-                  alert('Error updating user: ' + error.message);
-                });
-            }
-          }}
-        />
-        <button 
-          className="update-user-button" 
-          onClick={() => {
-            if (oldUserName.trim() && newUsernameForUpdate.trim()) {
-              Meteor.callAsync('transactions.updateUser', oldUserName.trim(), newUsernameForUpdate.trim())
-                .then((result) => {
-                  console.log('User updated successfully:', result);
-                  alert(`Updated ${result.totalUpdated} transactions for user ${oldUserName}`);
-                  setOldUserName('');
-                  setNewUsernameForUpdate('');
-                })
-                .catch((error) => {
-                  console.error('Error updating user:', error);
-                  alert('Error updating user: ' + error.message);
-                });
-            } else {
-              alert('Please fill in both username fields');
-            }
-          }}
-        >
-          Update User
-        </button>
+      <div className="form-section">
+        <h2>Update User</h2>
+        <div className="update-user-form">
+          <input
+            type="text"
+            placeholder="Current Username"
+            value={oldUserName}
+            onChange={(e) => setOldUserName(e.currentTarget.value)}
+          />
+          <input
+            type="text"
+            placeholder="New Username"
+            value={newUsernameForUpdate}
+            onChange={(e) => setNewUsernameForUpdate(e.currentTarget.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && oldUserName.trim() && newUsernameForUpdate.trim()) {
+                Meteor.callAsync('transactions.updateUser', oldUserName.trim(), newUsernameForUpdate.trim())
+                  .then((result) => {
+                    console.log('User updated successfully:', result);
+                    alert(`Updated ${result.totalUpdated} transactions for user ${oldUserName}`);
+                    setOldUserName('');
+                    setNewUsernameForUpdate('');
+                  })
+                  .catch((error) => {
+                    console.error('Error updating user:', error);
+                    alert('Error updating user: ' + error.message);
+                  });
+              }
+            }}
+          />
+          <button 
+            className="update-user-button" 
+            onClick={() => {
+              if (oldUserName.trim() && newUsernameForUpdate.trim()) {
+                Meteor.callAsync('transactions.updateUser', oldUserName.trim(), newUsernameForUpdate.trim())
+                  .then((result) => {
+                    console.log('User updated successfully:', result);
+                    alert(`Updated ${result.totalUpdated} transactions for user ${oldUserName}`);
+                    setOldUserName('');
+                    setNewUsernameForUpdate('');
+                  })
+                  .catch((error) => {
+                    console.error('Error updating user:', error);
+                    alert('Error updating user: ' + error.message);
+                  });
+              } else {
+                alert('Please fill in both username fields');
+              }
+            }}
+          >
+            Update User
+          </button>
+        </div>
       </div>
 
       <TransactionForm />
+      
       {updatingTransaction && (
         <UpdateTransactionForm
           transaction={updatingTransaction}
@@ -188,36 +199,41 @@ export const App = () => {
       )}
 
       {isLoading ? (
-  <div>Loading transactions...</div>
-) : (
-  <Fragment>
+        <div className="loading">Loading transactions...</div>
+      ) : (
+        <Fragment>
+          <div style={{ marginBottom: '30px' }}>
+            <h2 style={{ color: '#4c63d2', marginBottom: '20px' }}>Recent Transactions</h2>
+            <ul className="transactions">
+              {transactions.map(transaction => (
+                <Transaction
+                  key={transaction._id}
+                  transaction={transaction}
+                  onUpdateClick={handleUpdate}
+                  onDeleteClick={handleDelete}
+                />
+              ))}
+            </ul>
+          </div>
 
-    <ul className="transactions">
-      {transactions.map(transaction => (
-        <Transaction
-          key={transaction._id}
-          transaction={transaction}
-          onUpdateClick={handleUpdate}
-          onDeleteClick={handleDelete}
-        />
-      ))}
-    </ul>
-
-    <div className="all-user-balances">
-      <h2>All User Balances</h2>
-      {userBalances.map(userBalance => (
-        <div key={userBalance.username} className="user-balance-item">
-          <strong>{userBalance.username}</strong>: ${userBalance.balance.toFixed(2)}
-          <span className="details">
-            (Received: ${userBalance.totalReceived.toFixed(2)}, 
-             Sent: ${userBalance.totalSent.toFixed(2)})
-          </span>
-        </div>
-      ))}
+          <div className="all-user-balances">
+            <h2>User Balances</h2>
+            <div className="balances-grid">
+              {userBalances.map(userBalance => (
+                <div key={userBalance.username} className="user-balance-item">
+                  <div>
+                    <strong>{userBalance.username}</strong>: ${userBalance.balance.toFixed(2)}
+                  </div>
+                  <span className="details">
+                    Received: ${userBalance.totalReceived.toFixed(2)} | 
+                    Sent: ${userBalance.totalSent.toFixed(2)}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </Fragment>
+      )}
     </div>
-
-  </Fragment>
-)}
-    </Fragment>
   );
 };

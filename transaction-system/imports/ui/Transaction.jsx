@@ -4,27 +4,29 @@ export const Transaction = ({ transaction, onUpdateClick, onDeleteClick }) => {
   const formatDate = (date) => {
     if (!date) return 'Unspecified Date';
     const dateObj = date instanceof Date ? date : new Date(date);
-    return dateObj.toLocaleString();
+    return dateObj.toLocaleDateString() + ' ' + dateObj.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
   };
 
   return (
-    <li className="task">
-      <span className="task-text">Accountant: {transaction.accountantUsername}</span>
-      <span>    </span>
-      <span className="task-text">Sender: {transaction.senderUsername}</span>
-      <span>    </span>
-      <span className="task-text">Receiver: {transaction.receiverUsername}</span>
-      <span>    </span>
-      <span className="task-text">Amount: {transaction.amount}</span>
-      <span>    </span>
-      <span className="task-text">Created At: {formatDate(transaction.createdAt)}</span>
-
-      <button className="update-button" onClick={() => onUpdateClick(transaction)}>
-        Update
-      </button>
-      <button className="delete-button" onClick={() => onDeleteClick(transaction)}>
-        Delete
-      </button>
+    <li className="transaction-item">
+      <div className="transaction-header">
+        <div className="transaction-amount">${transaction.amount.toFixed(2)}</div>
+        <div className="transaction-actions">
+          <button className="edit-btn" onClick={() => onUpdateClick(transaction)}>
+            Edit
+          </button>
+          <button className="delete-btn" onClick={() => onDeleteClick(transaction)}>
+            Delete
+          </button>
+        </div>
+      </div>
+      
+      <div className="transaction-details">
+        <div><strong>From:</strong> {transaction.senderUsername}</div>
+        <div><strong>To:</strong> {transaction.receiverUsername}</div>
+        <div><strong>Processed by:</strong> {transaction.accountantUsername}</div>
+        <div><strong>Date:</strong> {formatDate(transaction.createdAt)}</div>
+      </div>
     </li>
   );
 };
