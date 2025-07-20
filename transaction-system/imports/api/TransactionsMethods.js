@@ -68,5 +68,33 @@ Meteor.methods({
   async 'transactions.getAllUserNames'() {
     const users = await Meteor.users.find({}, { fields: { username: 1 } }).fetchAsync();
     return users.map(user => user.username);
-  }
+  },
+
+  async 'transactions.getBalancesList'() {
+    const transactions = TransactionsCollection.find({}).fetch();
+    const allUsernames = new Set();
+    transactions.forEach(transaction => {
+    allUsernames.add(transaction.senderUsername);
+    allUsernames.add(transaction.receiverUsername);
+    });
+    const uniqueUsernames = Array.from(allUsernames);
+          
+    const userBalances = uniqueUsernames.map(username => {
+      const totalReceived = transactions
+      .filter(t => t.receiverUsername === username)
+      .reduce((sum, t) => sum + t.amount, 0);
+      
+      const totalSent = transactions
+      .filter(t => t.senderUsername === username)
+      .reduce((sum, t) => sum + t.amount, 0);
+      
+      return {
+      username: username,
+      balance: totalReceived - totalSent,
+      totalReceived: totalReceived,
+      totalSent: totalSent
+      };
+    });
+  return userBalances;
+}
 });
