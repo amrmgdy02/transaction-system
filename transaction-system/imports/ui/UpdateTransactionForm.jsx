@@ -18,7 +18,7 @@ export const UpdateTransactionForm = ({ transaction, onSave }) => {
         amount,
         createdAt: new Date(createdAt),
         });
-    
+
         onSave();
     };
     

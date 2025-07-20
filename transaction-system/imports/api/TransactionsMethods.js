@@ -96,5 +96,41 @@ Meteor.methods({
       };
     });
   return userBalances;
+},
+async 'transactions.getTransactionslist'(){
+  const transactions = await TransactionsCollection.find({}).fetchAsync();
+  return transactions;
+},
+async 'transactions.updateUser'(username, newUsername) {
+  check(username, String);
+  check(newUsername, String);
+  
+  if (!username || !newUsername) {
+    throw new Meteor.Error('Invalid usernames');
+  }
+  
+  const senderUpdateCount = await TransactionsCollection.updateAsync(
+    { senderUsername: username },
+    { $set: { senderUsername: newUsername } },
+    { multi: true }
+  );
+
+  const receiverUpdateCount = await TransactionsCollection.updateAsync(
+    { receiverUsername: username },
+    { $set: { receiverUsername: newUsername } },
+    { multi: true }
+  );
+  
+  const totalModified = senderUpdateCount + receiverUpdateCount;
+  
+  if (totalModified === 0) {
+    throw new Meteor.Error('No transactions found for this user');
+  }
+  
+  return {
+    senderTransactionsUpdated: senderUpdateCount,
+    receiverTransactionsUpdated: receiverUpdateCount,
+    totalUpdated: totalModified
+  };
 }
 });
