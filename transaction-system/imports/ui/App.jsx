@@ -13,6 +13,7 @@ import { useEffect } from 'react';
 export const App = () => {
   const [isRegistering, setIsRegistering] = useState(true);
   const [updatingTransaction, setUpdatingTransaction] = useState(null);
+  const [newUserName, setNewUserName] = useState('');
 
   const { user, transactions, isLoading, isAuthLoading, userBalances } = useTracker(() => {
     const user = Meteor.user();
@@ -96,6 +97,32 @@ export const App = () => {
     <Fragment>
       <button onClick={() => Meteor.logout()}>Logout</button>
       <h1>Welcome, {user.username}!</h1>
+      <h2>Add a New User</h2>
+      <div className="add-user-form">
+        <input
+          type="text"
+          placeholder="New User Name"
+          value={newUserName}
+          onChange={(e) => setNewUserName(e.currentTarget.value)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' && newUserName.trim()) {
+              Meteor.callAsync('transactions.addUser', newUserName.trim());
+              setNewUserName('');
+            }
+          }}
+        />
+        <button 
+          className="add-user-button" 
+          onClick={() => {
+            if (newUserName.trim()) {
+              Meteor.callAsync('transactions.addUser', newUserName.trim());
+              setNewUserName('');
+            }
+          }}
+        >
+          Add User
+        </button>
+      </div>
       <TransactionForm />
       {updatingTransaction && (
         <UpdateTransactionForm
