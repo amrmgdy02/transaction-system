@@ -109,12 +109,32 @@ async 'transactions.updateUser'(username, newUsername) {
     throw new Meteor.Error('Invalid usernames');
   }
   
+  // Check if the new username already exists in the users collection
+  const existingUser = await Meteor.users.findOneAsync({ username: newUsername });
+  if (existingUser) {
+    throw new Meteor.Error('username-exists', `Username '${newUsername}' is already taken`);
+  }
+  
+  // Check if the current username exists in the users collection
+  const currentUser = await Meteor.users.findOneAsync({ username: username });
+  if (!currentUser) {
+    throw new Meteor.Error('user-not-found', `User '${username}' not found`);
+  }
+  
+  // Update the user's username in the users collection
+  await Meteor.users.updateAsync(
+    { username: username },
+    { $set: { username: newUsername } }
+  );
+  
+  // Update transactions where user is the sender
   const senderUpdateCount = await TransactionsCollection.updateAsync(
     { senderUsername: username },
     { $set: { senderUsername: newUsername } },
     { multi: true }
   );
 
+  // Update transactions where user is the receiver
   const receiverUpdateCount = await TransactionsCollection.updateAsync(
     { receiverUsername: username },
     { $set: { receiverUsername: newUsername } },
@@ -123,14 +143,11 @@ async 'transactions.updateUser'(username, newUsername) {
   
   const totalModified = senderUpdateCount + receiverUpdateCount;
   
-  if (totalModified === 0) {
-    throw new Meteor.Error('No transactions found for this user');
-  }
-  
   return {
     senderTransactionsUpdated: senderUpdateCount,
     receiverTransactionsUpdated: receiverUpdateCount,
-    totalUpdated: totalModified
+    totalUpdated: totalModified,
+    userUpdated: true
   };
 },
   async 'transactions.addUser'(username) {

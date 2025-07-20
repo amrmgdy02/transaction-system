@@ -14,6 +14,8 @@ export const App = () => {
   const [isRegistering, setIsRegistering] = useState(true);
   const [updatingTransaction, setUpdatingTransaction] = useState(null);
   const [newUserName, setNewUserName] = useState('');
+  const [oldUserName, setOldUserName] = useState('');
+  const [newUsernameForUpdate, setNewUsernameForUpdate] = useState('');
 
   const { user, transactions, isLoading, isAuthLoading, userBalances } = useTracker(() => {
     const user = Meteor.user();
@@ -123,6 +125,60 @@ export const App = () => {
           Add User
         </button>
       </div>
+
+      <h2>Update User</h2>
+      <div className="update-user-form">
+        <input
+          type="text"
+          placeholder="Current Username"
+          value={oldUserName}
+          onChange={(e) => setOldUserName(e.currentTarget.value)}
+        />
+        <input
+          type="text"
+          placeholder="New Username"
+          value={newUsernameForUpdate}
+          onChange={(e) => setNewUsernameForUpdate(e.currentTarget.value)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' && oldUserName.trim() && newUsernameForUpdate.trim()) {
+              Meteor.callAsync('transactions.updateUser', oldUserName.trim(), newUsernameForUpdate.trim())
+                .then((result) => {
+                  console.log('User updated successfully:', result);
+                  alert(`Updated ${result.totalUpdated} transactions for user ${oldUserName}`);
+                  setOldUserName('');
+                  setNewUsernameForUpdate('');
+                })
+                .catch((error) => {
+                  console.error('Error updating user:', error);
+                  alert('Error updating user: ' + error.message);
+                });
+            }
+          }}
+        />
+        <button 
+          className="update-user-button" 
+          onClick={() => {
+            if (oldUserName.trim() && newUsernameForUpdate.trim()) {
+              Meteor.callAsync('transactions.updateUser', oldUserName.trim(), newUsernameForUpdate.trim())
+                .then((result) => {
+                  console.log('User updated successfully:', result);
+                  alert(`Updated ${result.totalUpdated} transactions for user ${oldUserName}`);
+                  setOldUserName('');
+                  setNewUsernameForUpdate('');
+                })
+                .catch((error) => {
+                  console.error('Error updating user:', error);
+                  alert('Error updating user: ' + error.message);
+                });
+            } else {
+              alert('Please fill in both username fields');
+            }
+          }}
+        >
+          Update User
+        </button>
+      </div>
+
       <TransactionForm />
       {updatingTransaction && (
         <UpdateTransactionForm
