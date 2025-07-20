@@ -74,19 +74,19 @@ Meteor.methods({
     const transactions = TransactionsCollection.find({}).fetch();
     const allUsernames = new Set();
     transactions.forEach(transaction => {
-    allUsernames.add(transaction.senderUsername);
-    allUsernames.add(transaction.receiverUsername);
+      allUsernames.add(transaction.senderUsername);
+      allUsernames.add(transaction.receiverUsername);
     });
     const uniqueUsernames = Array.from(allUsernames);
-          
+    
     const userBalances = uniqueUsernames.map(username => {
       const totalReceived = transactions
-      .filter(t => t.receiverUsername === username)
-      .reduce((sum, t) => sum + t.amount, 0);
+        .filter(t => t.receiverUsername === username)
+        .reduce((sum, t) => sum + t.amount, 0);
       
       const totalSent = transactions
-      .filter(t => t.senderUsername === username)
-      .reduce((sum, t) => sum + t.amount, 0);
+        .filter(t => t.senderUsername === username)
+        .reduce((sum, t) => sum + t.amount, 0);
       
       return {
       username: username,
@@ -132,5 +132,20 @@ async 'transactions.updateUser'(username, newUsername) {
     receiverTransactionsUpdated: receiverUpdateCount,
     totalUpdated: totalModified
   };
-}
+},
+  async 'transactions.addUser'(username) {
+    const password = Math.random().toString(36).slice(-8);
+    const email = `${username}${Math.floor(Math.random() * 1000)}@idaco.com`;
+    const existingUser = await Meteor.users.findOneAsync({ username });
+    if (existingUser) {
+      throw new Meteor.Error('user-exists', 'User already exists');
+    }
+    
+    const userId = await Accounts.createUserAsync({
+      username: username,
+      password: password,
+      email: email,
+    });
+    return userId;
+  },
 });
