@@ -8,7 +8,6 @@ const { useTracker } = require('meteor/react-meteor-data');
 import { Transaction } from './Transaction.jsx';
 import { TransactionForm } from './TransactionForm.jsx';
 import { UpdateTransactionForm } from './UpdateTransactionForm.jsx';
-import { useEffect } from 'react';
 
 export const App = () => {
   const [isRegistering, setIsRegistering] = useState(true);
@@ -26,11 +25,11 @@ export const App = () => {
         user: null, 
         transactions: [], 
         isLoading: false,
-        isAuthLoading 
+        isAuthLoading, 
       };
     }
 
-    const handle = Meteor.subscribe("transactions");
+    const handle = Meteor.subscribe('transactions');
     const isLoading = !handle.ready();
     
     let transactions = [];
@@ -57,7 +56,7 @@ export const App = () => {
           username: username,
           balance: totalReceived - totalSent,
           totalReceived: totalReceived,
-          totalSent: totalSent
+          totalSent: totalSent,
         };
       });
     }
@@ -74,7 +73,7 @@ export const App = () => {
   };
 
   const handleDelete = (transaction) => {
-    Meteor.callAsync("transactions.remove", transaction._id);
+    Meteor.callAsync('transactions.remove', transaction._id);
   };
 
   if (isAuthLoading) {
@@ -86,9 +85,9 @@ export const App = () => {
       <div className="auth-container">
         {isRegistering ? <RegistrationForm /> : <LoginForm />}
         <p style={{ marginTop: '20px', color: '#666' }}>
-          {isRegistering ? "Already have an account?" : "Don't have an account?"}
+          {isRegistering ? 'Already have an account?' : "Don't have an account?"}
           <button className="toggle-button" onClick={() => setIsRegistering(!isRegistering)}>
-            {isRegistering ? "Login" : "Register"}
+            {isRegistering ? 'Login' : 'Register'}
           </button>
         </p>
       </div>

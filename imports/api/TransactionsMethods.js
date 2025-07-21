@@ -46,12 +46,12 @@ Meteor.methods({
     check(username, String);
     
     const receivedTransactions = await TransactionsCollection.find({ 
-      receiverUsername: username 
+      receiverUsername: username, 
     }).fetchAsync();
     const totalReceived = receivedTransactions.reduce((sum, t) => sum + t.amount, 0);
     
     const sentTransactions = await TransactionsCollection.find({ 
-      senderUsername: username 
+      senderUsername: username, 
     }).fetchAsync();
 
     const totalSent = sentTransactions.reduce((sum, t) => sum + t.amount, 0);
@@ -61,7 +61,7 @@ Meteor.methods({
       username: username,
       balance: balance,
       totalReceived: totalReceived,
-      totalSent: totalSent
+      totalSent: totalSent,
     };
   },
 
@@ -89,67 +89,67 @@ Meteor.methods({
         .reduce((sum, t) => sum + t.amount, 0);
       
       return {
-      username: username,
-      balance: totalReceived - totalSent,
-      totalReceived: totalReceived,
-      totalSent: totalSent
+        username: username,
+        balance: totalReceived - totalSent,
+        totalReceived: totalReceived,
+        totalSent: totalSent,
       };
     });
-  return userBalances;
-},
-async 'transactions.getTransactionslist'(){
-  const transactions = await TransactionsCollection.find({}).fetchAsync();
-  return transactions;
-},
-async 'transactions.updateUser'(username, newUsername) {
-  check(username, String);
-  check(newUsername, String);
+    return userBalances;
+  },
+  async 'transactions.getTransactionslist'(){
+    const transactions = await TransactionsCollection.find({}).fetchAsync();
+    return transactions;
+  },
+  async 'transactions.updateUser'(username, newUsername) {
+    check(username, String);
+    check(newUsername, String);
   
-  if (!username || !newUsername) {
-    throw new Meteor.Error('Invalid usernames');
-  }
+    if (!username || !newUsername) {
+      throw new Meteor.Error('Invalid usernames');
+    }
   
-  // Check if the new username already exists in the users collection
-  const existingUser = await Meteor.users.findOneAsync({ username: newUsername });
-  if (existingUser) {
-    throw new Meteor.Error('username-exists', `Username '${newUsername}' is already taken`);
-  }
+    // Check if the new username already exists in the users collection
+    const existingUser = await Meteor.users.findOneAsync({ username: newUsername });
+    if (existingUser) {
+      throw new Meteor.Error('username-exists', `Username '${newUsername}' is already taken`);
+    }
   
-  // Check if the current username exists in the users collection
-  const currentUser = await Meteor.users.findOneAsync({ username: username });
-  if (!currentUser) {
-    throw new Meteor.Error('user-not-found', `User '${username}' not found`);
-  }
+    // Check if the current username exists in the users collection
+    const currentUser = await Meteor.users.findOneAsync({ username: username });
+    if (!currentUser) {
+      throw new Meteor.Error('user-not-found', `User '${username}' not found`);
+    }
   
-  // Update the user's username in the users collection
-  await Meteor.users.updateAsync(
-    { username: username },
-    { $set: { username: newUsername } }
-  );
+    // Update the user's username in the users collection
+    await Meteor.users.updateAsync(
+      { username: username },
+      { $set: { username: newUsername } },
+    );
   
-  // Update transactions where user is the sender
-  const senderUpdateCount = await TransactionsCollection.updateAsync(
-    { senderUsername: username },
-    { $set: { senderUsername: newUsername } },
-    { multi: true }
-  );
+    // Update transactions where user is the sender
+    const senderUpdateCount = await TransactionsCollection.updateAsync(
+      { senderUsername: username },
+      { $set: { senderUsername: newUsername } },
+      { multi: true },
+    );
 
-  // Update transactions where user is the receiver
-  const receiverUpdateCount = await TransactionsCollection.updateAsync(
-    { receiverUsername: username },
-    { $set: { receiverUsername: newUsername } },
-    { multi: true }
-  );
+    // Update transactions where user is the receiver
+    const receiverUpdateCount = await TransactionsCollection.updateAsync(
+      { receiverUsername: username },
+      { $set: { receiverUsername: newUsername } },
+      { multi: true },
+    );
   
-  const totalModified = senderUpdateCount + receiverUpdateCount;
+    const totalModified = senderUpdateCount + receiverUpdateCount;
   
-  return {
-    senderTransactionsUpdated: senderUpdateCount,
-    receiverTransactionsUpdated: receiverUpdateCount,
-    totalUpdated: totalModified,
-    userUpdated: true
-  };
-},
+    return {
+      senderTransactionsUpdated: senderUpdateCount,
+      receiverTransactionsUpdated: receiverUpdateCount,
+      totalUpdated: totalModified,
+      userUpdated: true,
+    };
+  },
   async 'transactions.addUser'(username) {
     const password = Math.random().toString(36).slice(-8);
     const email = `${username}${Math.floor(Math.random() * 1000)}@idaco.com`;

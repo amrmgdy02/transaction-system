@@ -1,23 +1,23 @@
-import React, { useState } from "react";
-import { Meteor } from "meteor/meteor";
-import "../api/transaction.js";
+import React, { useState } from 'react';
+import { Meteor } from 'meteor/meteor';
+import '../api/transaction.js';
 
 export const TransactionForm = () => {
-  const [senderUsername, setSenderUsername] = useState("");
-  const [receiverUsername, setReceiverUsername] = useState("");
-  const [amount, setAmount] = useState("");
-  const [createdAt, setCreatedAt] = useState("");
+  const [senderUsername, setSenderUsername] = useState('');
+  const [receiverUsername, setReceiverUsername] = useState('');
+  const [amount, setAmount] = useState('');
+  const [createdAt, setCreatedAt] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     const numAmount = parseFloat(amount);
     if (!senderUsername || !receiverUsername || !amount || numAmount <= 0) {
-      alert("Please fill in all fields with valid data");
+      alert('Please fill in all fields with valid data');
       return;
     }
     
     try {
-      await Meteor.callAsync("transactions.insert", {
+      await Meteor.callAsync('transactions.insert', {
         senderUsername: senderUsername.trim(),
         receiverUsername: receiverUsername.trim(),
         amount: numAmount,
@@ -25,15 +25,15 @@ export const TransactionForm = () => {
       });
       
       // Reset form
-      setSenderUsername("");
-      setReceiverUsername("");
-      setAmount("");
-      setCreatedAt("");
+      setSenderUsername('');
+      setReceiverUsername('');
+      setAmount('');
+      setCreatedAt('');
       
-      alert("Transaction added successfully!");
+      alert('Transaction added successfully!');
     } catch (error) {
-      alert("Error adding transaction: " + error.message);
-      console.error("Transaction error:", error);
+      alert('Error adding transaction: ' + error.message);
+      console.error('Transaction error:', error);
     }
   };
   
