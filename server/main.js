@@ -3,5 +3,5 @@ import '../imports/api/TransactionsMethods.js';
 import '../imports/api/TransactionsPublications.js';
 
 Meteor.startup(async () => {
-    console.log('Server started successfully!');
+  console.log('Server started successfully!');
 });

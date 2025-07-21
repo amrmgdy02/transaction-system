@@ -1,9 +1,9 @@
-import { Accounts } from "meteor/accounts-base";
-import React, { useState } from "react";
+import { Accounts } from 'meteor/accounts-base';
+import React, { useState } from 'react';
 
 export const RegistrationForm = () => {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
 
   const submit = (e) => {
     e.preventDefault();
